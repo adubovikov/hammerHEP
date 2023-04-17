@@ -14,17 +14,22 @@ go install github.com/adubovikov/hammerHEP
 ### Usage of hammerHEP:
 
 ```bash
+Usage of ./hammerhep:
   -address string
     	Destination Address (default "localhost")
+  -file string
+    	Generate calls from file
+  -generate-callid
+    	Generate callID
   -port string
     	Destination Port (default "9060")
   -protocol string
-    	Possible protocols are HEP,IPFIX (default "HEP")
+    	Possible protocols are HEP,IPFIX, FILE-TXT (default "HEP")
   -rate int
     	Packets per second (default 16)
   -transport string
     	Possible transports are UDP,TCP,TLS (default "TLS")
-     
+
 ################################################################
 
 hammerHEP -rate 100
