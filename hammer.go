@@ -12,15 +12,18 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/adubovikov/hammerHEP/publish"
 	"go.uber.org/ratelimit"
 )
 
 // Hammer container
 type Hammer struct {
-	addr  string
-	trans []Transport
-	proto string
-	rate  int
+	addr       string
+	trans      []Transport
+	proto      string
+	rate       int
+	replaceCid bool
+	fileTxt    string
 }
 
 // Transport for Packet
@@ -48,14 +51,16 @@ func cutSpace(str string) string {
 }
 
 // NewHammer constructor
-func NewHammer(proto, addr, port, trans string, rate int) (*Hammer, error) {
+func NewHammer(proto, addr, port, trans string, rate int, generateCallID bool, fileTxt string) (*Hammer, error) {
 	t := strings.Split(strings.ToLower(cutSpace(trans)), ",")
 	l := len(t)
 	h := &Hammer{
-		addr:  strings.ToLower(cutSpace(addr + ":" + port)),
-		trans: make([]Transport, l),
-		proto: strings.ToLower(proto),
-		rate:  rate / l,
+		addr:       strings.ToLower(cutSpace(addr + ":" + port)),
+		trans:      make([]Transport, l),
+		proto:      strings.ToLower(proto),
+		rate:       rate / l,
+		replaceCid: generateCallID,
+		fileTxt:    fileTxt,
 	}
 	for k, v := range t {
 		h.trans[k].name = v
@@ -98,7 +103,7 @@ func (h *Hammer) reconnect(k int) error {
 // Hammer time
 func (h *Hammer) start() {
 	var wg sync.WaitGroup
-	var packets = buildPackets(h.proto)
+	var packets = buildPackets(h.proto, h.replaceCid, h.fileTxt)
 
 	for k := range h.trans {
 		wg.Add(1)
@@ -148,13 +153,24 @@ func send(proto string, rate int, ch chan Packet, packets []Packet) {
 	}
 }
 
-func buildPackets(proto string) []Packet {
+func buildPackets(proto string, replaceCallid bool, file string) []Packet {
 	packets := []Packet{}
 	msg := [][]byte{}
 
 	switch proto {
+	case "file-txt":
+		hepPackets := publish.GeneratePacketsArrayFromText(file, replaceCallid)
+		for _, hepPacket := range hepPackets {
+			hep, _ := publish.EncodeHEP(&hepPacket)
+			payload := make([]byte, 8192)
+			copy(payload[:], hep)
+			packets = append(packets, Packet{payload: payload[:len(hep)], length: len(hep)})
+			return packets
+		}
+
 	case "ipfix":
 		msg = fakeIPFIX
+
 	default:
 		msg = fakeHEP
 		for i := 0; i < len(msg); i++ {

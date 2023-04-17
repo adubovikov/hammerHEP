@@ -8,11 +8,13 @@ import (
 
 func main() {
 	var (
-		port  = flag.String("port", "9060", "Destination Port")
-		addr  = flag.String("address", "localhost", "Destination Address")
-		rate  = flag.Int("rate", 16, "Packets per second")
-		proto = flag.String("protocol", "HEP", "Possible protocols are HEP,IPFIX")
-		trans = flag.String("transport", "TLS", "Possible transports are UDP,TCP,TLS")
+		port       = flag.String("port", "9060", "Destination Port")
+		addr       = flag.String("address", "localhost", "Destination Address")
+		rate       = flag.Int("rate", 16, "Packets per second")
+		generateID = flag.Bool("generate-callid", false, "Generate callID")
+		proto      = flag.String("protocol", "HEP", "Possible protocols are HEP,IPFIX, FILE-TXT")
+		fileTxt    = flag.String("file", "", "Generate calls from file")
+		trans      = flag.String("transport", "TLS", "Possible transports are UDP,TCP,TLS")
 	)
 	flag.Parse()
 
@@ -21,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	hammer, err := NewHammer(*proto, *addr, *port, *trans, *rate)
+	hammer, err := NewHammer(*proto, *addr, *port, *trans, *rate, *generateID, *fileTxt)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

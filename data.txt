@@ -1,0 +1,213 @@
+proto:UDP 2023-04-17T14:55:57.188808+02:00  192.168.178.20:61000 ---> 10.0.0.2:5060
+
+INVITE sip:5000@sip.domain.com;user=phone SIP/2.0
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK647a3b77FBF98788
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>
+CSeq: 1 INVITE
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+Contact: <sip:145@192.168.178.61>
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,INFO,MESSAGE,SUBSCRIBE,NOTIFY,PRACK,UPDATE,REFER
+User-Agent: PolycomVVX-VVX_500-UA/5.9.7.3480
+Accept-Language: en
+Supported: replaces,100rel
+Allow-Events: conference,talk,hold
+Max-Forwards: 70
+Content-Type: application/sdp
+Content-Length: 386
+
+v=0
+o=- 1681736157 1681736157 IN IP4 192.168.178.61
+s=Polycom IP Phone
+c=IN IP4 192.168.178.61
+t=0 0
+a=sendrecv
+m=audio 2242 RTP/AVP 115 9 102 8 18 101
+a=rtpmap:115 G7221/32000
+a=fmtp:115 bitrate=48000
+a=rtpmap:9 G722/8000
+a=rtpmap:102 G7221/16000
+a=fmtp:102 bitrate=32000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:18 G729/8000
+a=fmtp:18 annexb=no
+a=rtpmap:101 telephone-event/8000
+
+proto:UDP 2023-04-17T14:55:57.316748+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
+
+SIP/2.0 407 Proxy Authentication Required
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK647a3b77FBF98788;received=192.168.178.20;rport=61000
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=gpZ679c3y6U6e
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+CSeq: 1 INVITE
+User-Agent: HEP service
+Accept: application/sdp
+Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, INFO, UPDATE, REGISTER, REFER, NOTIFY, PUBLISH, SUBSCRIBE
+Supported: timer, path, replaces
+Allow-Events: talk, hold, conference, presence, as-feature-event, dialog, line-seize, call-info, sla, include-session-description, presence.winfo, message-summary, refer
+Proxy-Authenticate: Digest realm="sip.domain.com", nonce="52a21af7-3cf5-494d-ac7c-2c62949f1144", algorithm=MD5, qop="auth"
+Content-Length: 0
+
+
+proto:UDP 2023-04-17T14:55:57.347028+02:00  192.168.178.20:61000 ---> 10.0.0.2:5060
+
+ACK sip:5000@sip.domain.com;user=phone SIP/2.0
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK647a3b77FBF98788
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=gpZ679c3y6U6e
+CSeq: 1 ACK
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+Contact: <sip:145@192.168.178.61>
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,INFO,MESSAGE,SUBSCRIBE,NOTIFY,PRACK,UPDATE,REFER
+User-Agent: PolycomVVX-VVX_500-UA/5.9.7.3480
+Accept-Language: en
+Max-Forwards: 70
+Content-Length: 0
+
+
+proto:UDP 2023-04-17T14:55:57.348554+02:00  192.168.178.20:61000 ---> 10.0.0.2:5060
+
+INVITE sip:5000@sip.domain.com;user=phone SIP/2.0
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK9e981c753F95F64E
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>
+CSeq: 2 INVITE
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+Contact: <sip:145@192.168.178.61>
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,INFO,MESSAGE,SUBSCRIBE,NOTIFY,PRACK,UPDATE,REFER
+User-Agent: PolycomVVX-VVX_500-UA/5.9.7.3480
+Accept-Language: en
+Supported: replaces,100rel
+Allow-Events: conference,talk,hold
+Proxy-Authorization: Digest username="145", realm="sip.domain.com", nonce="52a21af7-3cf5-494d-ac7c-2c62949f1144", qop=auth, cnonce="NsB7pn7m5aT8OwD", nc=00000001, uri="sip:5000@sip.domain.com;user=phone", response="06a1f367216cc16882b635c769bdcdd4", algorithm=MD5
+Max-Forwards: 70
+Content-Type: application/sdp
+Content-Length: 386
+
+v=0
+o=- 1681736157 1681736157 IN IP4 192.168.178.61
+s=Polycom IP Phone
+c=IN IP4 192.168.178.61
+t=0 0
+a=sendrecv
+m=audio 2242 RTP/AVP 115 9 102 8 18 101
+a=rtpmap:115 G7221/32000
+a=fmtp:115 bitrate=48000
+a=rtpmap:9 G722/8000
+a=rtpmap:102 G7221/16000
+a=fmtp:102 bitrate=32000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:18 G729/8000
+a=fmtp:18 annexb=no
+a=rtpmap:101 telephone-event/8000
+
+proto:UDP 2023-04-17T14:55:57.352623+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK9e981c753F95F64E;received=192.168.178.20;rport=61000
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+CSeq: 2 INVITE
+User-Agent: HEP service
+Content-Length: 0
+
+
+proto:UDP 2023-04-17T14:55:57.354955+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
+
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK9e981c753F95F64E;received=192.168.178.20;rport=61000
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=HZrZ94X6UFjSa
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+CSeq: 2 INVITE
+Contact: <sip:5000@10.0.0.2:5060;transport=udp>
+User-Agent: HEP service
+Accept: application/sdp
+Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, INFO, UPDATE, REGISTER, REFER, NOTIFY, PUBLISH, SUBSCRIBE
+Supported: timer, path, replaces
+Allow-Events: talk, hold, conference, presence, as-feature-event, dialog, line-seize, call-info, sla, include-session-description, presence.winfo, message-summary, refer
+Content-Length: 0
+X-A-RTP-TX: udp:1.2.3.4:5555
+X-A-RTP-RX: udp:1.2.3.6:5556
+Remote-Party-ID: "5000" <5000>;party=calling;privacy=off;screen=no
+
+
+proto:UDP 2023-04-17T14:55:59.384827+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK9e981c753F95F64E;received=192.168.178.20;rport=61000
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=HZrZ94X6UFjSa
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+CSeq: 2 INVITE
+Contact: <sip:5000@10.0.0.2:5060;transport=udp>
+User-Agent: HEP service
+Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, INFO, UPDATE, REGISTER, REFER, NOTIFY, PUBLISH, SUBSCRIBE
+Supported: timer, path, replaces
+Allow-Events: talk, hold, conference, presence, as-feature-event, dialog, line-seize, call-info, sla, include-session-description, presence.winfo, message-summary, refer
+Session-Expires: 120;refresher=uas
+Content-Type: application/sdp
+Content-Disposition: session
+Content-Length: 260
+Remote-Party-ID: "5000" <5000>;party=calling;privacy=off;screen=no
+
+v=0
+o=FreeSWITCH 1681706217 1681706218 IN IP4 10.0.0.2
+s=FreeSWITCH
+c=IN IP4 10.0.0.2
+t=0 0
+m=audio 29942 RTP/AVP 9 101
+a=rtpmap:9 G722/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=ptime:20
+a=rtcp:29943 IN IP4 10.0.0.2
+
+proto:UDP 2023-04-17T14:55:59.414323+02:00  192.168.178.20:61000 ---> 10.0.0.2:5060
+
+ACK sip:5000@10.0.0.2:5060;transport=udp SIP/2.0
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK165d164177A8D66A
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=HZrZ94X6UFjSa
+CSeq: 2 ACK
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+Contact: <sip:145@192.168.178.61>
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,INFO,MESSAGE,SUBSCRIBE,NOTIFY,PRACK,UPDATE,REFER
+User-Agent: PolycomVVX-VVX_500-UA/5.9.7.3480
+Accept-Language: en
+Max-Forwards: 70
+Content-Length: 0
+
+
+proto:UDP 2023-04-17T14:56:19.32101+02:00  192.168.178.20:61000 ---> 10.0.0.2:5060
+
+BYE sip:5000@10.0.0.2:5060;transport=udp SIP/2.0
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK5f3f8dcd53E33546
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=HZrZ94X6UFjSa
+CSeq: 3 BYE
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+Contact: <sip:145@192.168.178.61>
+User-Agent: PolycomVVX-VVX_500-UA/5.9.7.3480
+Accept-Language: en
+Proxy-Authorization: Digest username="145", realm="sip.domain.com", nonce="52a21af7-3cf5-494d-ac7c-2c62949f1144", qop=auth, cnonce="NsB7pn7m5aT8OwD", nc=00000002, uri="sip:5000@sip.domain.com;user=phone", response="e58b19efa493b18103c5fe1bb6f69a4a", algorithm=MD5
+Max-Forwards: 70
+Content-Length: 0
+
+
+proto:UDP 2023-04-17T14:56:19.323629+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 192.168.178.61;branch=z9hG4bK5f3f8dcd53E33546;received=192.168.178.20;rport=61000
+From: "145" <sip:145@sip.domain.com>;tag=C703B469-685FD8F2
+To: <sip:5000@sip.domain.com;user=phone>;tag=HZrZ94X6UFjSa
+Call-ID: bc10d3c29575c32f1716edd66e81dbf9
+CSeq: 3 BYE
+User-Agent: HEP service
+Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, INFO, UPDATE, REGISTER, REFER, NOTIFY, PUBLISH, SUBSCRIBE
+Supported: timer, path, replaces
+Content-Length: 0
+
+
