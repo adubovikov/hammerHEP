@@ -63,6 +63,14 @@ type Packet struct {
 	Payload   []byte
 	CID       []byte
 	Vlan      uint16
+	// date
+	dateString string
+}
+
+type ReplaceParams struct {
+	ReplaceCid  bool
+	ReplaceTime bool
+	ReplaceIP   bool
 }
 
 // EncodeHEP creates the HEP Packet which

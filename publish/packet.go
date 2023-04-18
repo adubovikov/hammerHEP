@@ -44,7 +44,43 @@ func RandStringBytes(n int) string {
 	return string(b)
 }
 
-func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet {
+func randomIPFromRange(cidr string) (net.IP, error) {
+
+GENERATE:
+
+	ip, ipnet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return nil, err
+	}
+
+	// The number of leading 1s in the mask
+	ones, _ := ipnet.Mask.Size()
+	quotient := ones / 8
+	remainder := ones % 8
+
+	// create random 4-byte byte slice
+	r := make([]byte, 4)
+	rand.Read(r)
+
+	for i := 0; i <= quotient; i++ {
+		if i == quotient {
+			shifted := byte(r[i]) >> remainder
+			r[i] = ^ipnet.IP[i] & shifted
+		} else {
+			r[i] = ipnet.IP[i]
+		}
+	}
+	ip = net.IPv4(r[0], r[1], r[2], r[3])
+
+	if ip.Equal(ipnet.IP) /*|| ip.Equal(broadcast) */ {
+		// we got unlucky. The host portion of our ipv4 address was
+		// either all 0s (the network address) or all 1s (the broadcast address)
+		goto GENERATE
+	}
+	return ip, nil
+}
+
+func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Packet {
 	var scenario []Packet
 
 	file, err := os.Open(fileName)
@@ -56,19 +92,20 @@ func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet 
 	//proto:UDP 2023-04-17T14:56:19.323629+02:00  10.0.0.2:5060 ---> 192.168.178.20:61000
 
 	scanner := bufio.NewScanner(file)
-	// optionally, resize scanner's capacity for lines over 64K, see next example
 	firtLine := false
 	startMessage := false
 	sipMessage := ""
 	protoString := ""
-	dateString := ""
 	var error error
-	var date time.Time
 	srcIP := ""
 	dstIP := ""
 	var srcPort uint16
 	var dstPort uint16
 	generatedCallID := RandStringBytes(30)
+	dateNow := time.Now()
+	var date time.Time
+
+	mapIP := make(map[string]string)
 
 	var hepPacket Packet
 
@@ -76,18 +113,19 @@ func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet 
 		lineData := scanner.Text()
 
 		if strings.HasPrefix(lineData, "proto:") {
-			fmt.Println("HAS DATA:", lineData)
 			lineArray := strings.Split(lineData, " ")
 			protoString = strings.TrimPrefix(lineArray[0], "proto:")
-			dateString := lineArray[1]
+			dateArray := strings.Split(lineArray[1], "+")
+			hepPacket.dateString = dateArray[0]
 
 			if sipMessage != "" {
-				fmt.Println("MIDDLE:", sipMessage)
 				hepPacket.Payload = []byte(sipMessage)
 				scenario = append(scenario, hepPacket)
+				//Debug
+				//dumpHEPMessage(hepPacket)
 			}
 
-			date, error = time.Parse(time.RFC3339Nano, dateString)
+			date, error = time.Parse("2006-01-02T15:04:05.999999", hepPacket.dateString)
 
 			if error != nil {
 				fmt.Println(error)
@@ -106,13 +144,22 @@ func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet 
 			ui64, _ = strconv.ParseUint(dstData[1], 10, 64)
 			dstPort = uint16(ui64)
 
-			fmt.Println("Proto:", protoString)
-			fmt.Println("dateString:", dateString)
-			fmt.Println("date:", date.String())
-			fmt.Println("src:", srcIP)
-			fmt.Println("src:", srcPort)
-			fmt.Println("dst:", dstIP)
-			fmt.Println("dst:", dstPort)
+			//replace IP
+			if replace.ReplaceIP {
+				if val, ok := mapIP[srcIP]; ok {
+					srcIP = val
+				} else {
+					randomIP, _ := randomIPFromRange("10.0.0.0/8")
+					mapIP[srcIP] = randomIP.String()
+				}
+
+				if val, ok := mapIP[dstIP]; ok {
+					dstIP = val
+				} else {
+					randomIP, _ := randomIPFromRange("192.168.80.0/16")
+					mapIP[dstIP] = randomIP.String()
+				}
+			}
 
 			hepPacket = Packet{
 				Version:   3,
@@ -133,27 +180,20 @@ func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet 
 			}
 
 			firtLine = true
-			startMessage = false
 
+			//Clean up
+			startMessage = false
 			sipMessage = ""
+
 		} else if firtLine && lineData == "" {
 			startMessage = true
 		} else if firtLine && startMessage {
-			if replaceCallid && strings.HasPrefix(lineData, "Call-ID: ") {
+			if replace.ReplaceCid && strings.HasPrefix(lineData, "Call-ID: ") {
 				lineData = "Call-ID: " + generatedCallID
 			}
 			sipMessage = sipMessage + lineData + "\r\n"
 		}
-
 	}
-
-	fmt.Println("Proto:", protoString)
-	fmt.Println("dateString:", dateString)
-	fmt.Println("date:", date.String())
-	fmt.Println("src:", srcIP)
-	fmt.Println("src:", srcPort)
-	fmt.Println("dst:", dstIP)
-	fmt.Println("dst:", dstPort)
 
 	hepPacket = Packet{
 		Version:   3,
@@ -168,19 +208,52 @@ func GeneratePacketsArrayFromText(fileName string, replaceCallid bool) []Packet 
 		Payload:   []byte(sipMessage),
 	}
 
+	difference := date.Sub(dateNow)
+
 	if protoString == "UDP" {
 		hepPacket.Protocol = 17
 	} else if protoString == "TCP" {
 		hepPacket.Protocol = 4
 	}
 
-	fmt.Println("END:", sipMessage)
-
 	scenario = append(scenario, hepPacket)
+
+	//Range
+	if replace.ReplaceTime {
+		for i := range scenario {
+			scenario[i].Tsec += uint32(difference.Seconds())
+		}
+	}
+
+	//Debug
+	for _, s := range scenario {
+		dumpHEPMessage(s)
+	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
 	return scenario
+}
+
+func dumpHEPMessage(hep Packet) {
+
+	fmt.Println("Date orig:", hep.dateString)
+	fmt.Println("Tsec:", hep.Tsec)
+	fmt.Println("Tmsec:", hep.Tmsec)
+	fmt.Println("src IP:", hep.SrcIP.String())
+	fmt.Println("src Port:", hep.SrcPort)
+	fmt.Println("dst IP:", hep.DstIP.String())
+	fmt.Println("dst Port:", hep.DstPort)
+
+	fmt.Println("Message:", string(hep.Payload))
+}
+
+func dumpHEPMessages(heps []Packet) {
+
+	for _, h := range heps {
+		dumpHEPMessage(h)
+	}
+
 }
