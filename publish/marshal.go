@@ -6,8 +6,6 @@ import (
 	"net"
 	strings "strings"
 	"unsafe"
-
-	proto "github.com/gogo/protobuf/proto"
 )
 
 // HEP chuncks
@@ -76,24 +74,25 @@ type ReplaceParams struct {
 // EncodeHEP creates the HEP Packet which
 // will be send to wire
 func EncodeHEP(h *Packet) (hepMsg []byte, err error) {
-	hep := &HEP{
-		Version:   uint32(h.Version),
-		Protocol:  uint32(h.Protocol),
-		SrcIP:     h.SrcIP.String(),
-		DstIP:     h.DstIP.String(),
-		SrcPort:   uint32(h.SrcPort),
-		DstPort:   uint32(h.DstPort),
+
+	hep := &HepMsg{
+		Version:   h.Version,
+		Protocol:  h.Protocol,
+		SrcIP:     h.SrcIP,
+		DstIP:     h.DstIP,
+		SrcPort:   h.SrcPort,
+		DstPort:   h.DstPort,
 		Tsec:      h.Tsec,
 		Tmsec:     h.Tmsec,
-		ProtoType: uint32(h.ProtoType),
+		ProtoType: h.ProtoType,
 		NodeID:    uint32(999),
 		NodePW:    "empty",
-		Payload:   unsafeBytesToStr(h.Payload),
-		CID:       unsafeBytesToStr(h.CID),
-		Vlan:      uint32(h.Vlan),
+		Payload:   h.Payload,
+		CID:       h.CID,
+		Vlan:      h.Vlan,
 	}
-	hepMsg, err = proto.Marshal(hep)
 
+	hepMsg, err = hep.Marshal()
 	return hepMsg, err
 }
 

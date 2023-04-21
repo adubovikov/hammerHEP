@@ -156,20 +156,20 @@ func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Pack
 				if val, ok := mapIP[dstIP]; ok {
 					dstIP = val
 				} else {
-					randomIP, _ := randomIPFromRange("192.168.80.0/16")
+					randomIP, _ := randomIPFromRange("192.168.0.0/8")
 					mapIP[dstIP] = randomIP.String()
 				}
 			}
 
 			hepPacket = Packet{
-				Version:   3,
+				Version:   0x02,
 				Protocol:  17,
-				SrcIP:     net.ParseIP(srcIP),
-				DstIP:     net.ParseIP(dstIP),
+				SrcIP:     net.ParseIP(srcIP).To4(),
+				DstIP:     net.ParseIP(dstIP).To4(),
 				SrcPort:   srcPort,
 				DstPort:   dstPort,
 				Tsec:      uint32(date.Unix()),
-				Tmsec:     uint32(date.UnixMicro() - (date.Unix() * 1000)),
+				Tmsec:     uint32(date.UnixMilli() - (date.Unix() * 1000)),
 				ProtoType: 1,
 			}
 
@@ -187,7 +187,8 @@ func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Pack
 
 		} else if firtLine && lineData == "" {
 			startMessage = true
-		} else if firtLine && startMessage {
+			firtLine = false
+		} else if startMessage {
 			if replace.ReplaceCid && strings.HasPrefix(lineData, "Call-ID: ") {
 				lineData = "Call-ID: " + generatedCallID
 			}
@@ -196,19 +197,21 @@ func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Pack
 	}
 
 	hepPacket = Packet{
-		Version:   3,
+		Version:   0x02,
 		Protocol:  17,
-		SrcIP:     net.ParseIP(srcIP),
-		DstIP:     net.ParseIP(dstIP),
+		SrcIP:     net.ParseIP(srcIP).To4(),
+		DstIP:     net.ParseIP(dstIP).To4(),
 		SrcPort:   srcPort,
 		DstPort:   dstPort,
 		Tsec:      uint32(date.Unix()),
-		Tmsec:     uint32(date.UnixMicro() - (date.Unix() * 1000)),
+		Tmsec:     uint32(date.UnixMilli() / (date.Unix() * 1000)),
 		ProtoType: 1,
 		Payload:   []byte(sipMessage),
 	}
 
-	difference := date.Sub(dateNow)
+	difference := dateNow.Sub(date)
+
+	//fmt.Println("DIFF - ", difference.Seconds())
 
 	if protoString == "UDP" {
 		hepPacket.Protocol = 17
@@ -221,7 +224,10 @@ func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Pack
 	//Range
 	if replace.ReplaceTime {
 		for i := range scenario {
+			//fmt.Println("BEFORE DIFF - ", scenario[i].Tsec)
 			scenario[i].Tsec += uint32(difference.Seconds())
+			scenario[i].Tmsec = uint32(i * 100)
+			//fmt.Println("AFTER DIFF - ", scenario[i].Tsec)
 		}
 	}
 
