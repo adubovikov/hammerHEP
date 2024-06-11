@@ -153,6 +153,9 @@ func send(proto, fileTxt string, replace publish.ReplaceParams, rate int, ch cha
 			ch <- p
 		}
 
+		//Count packets
+		hammerStats.TotalPackets.Add(uint64(len(packets)))
+
 		limit.Take()
 	}
 }

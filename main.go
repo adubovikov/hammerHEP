@@ -4,9 +4,21 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"sync/atomic"
+	"time"
 
 	"github.com/adubovikov/hammerHEP/publish"
 )
+
+// Internal Stats
+type Statistics struct {
+	TotalPackets atomic.Uint64
+	timeStart    time.Time
+	timeStop     time.Time
+}
+
+var hammerStats Statistics
 
 func main() {
 	var (
@@ -32,6 +44,21 @@ func main() {
 		ReplaceTime: *replaceTime,
 		ReplaceIP:   *replaceIP,
 	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			fmt.Printf("Got %s signal. Aborting...\n", sig)
+			hammerStats.timeStop = time.Now()
+			fmt.Printf("Period from: %v, to %v\n", hammerStats.timeStart.Local(), hammerStats.timeStop.Local())
+			fmt.Printf("Seconds: %d\n", hammerStats.timeStop.Unix()-hammerStats.timeStart.Unix())
+			fmt.Printf("Sent packets: %d\n", hammerStats.TotalPackets.Load())
+			os.Exit(1)
+		}
+	}()
+
+	hammerStats.timeStart = time.Now()
 
 	hammer, err := NewHammer(*proto, *addr, *port, *trans, *rate, *fileTxt, replace)
 	if err != nil {

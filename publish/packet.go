@@ -232,9 +232,9 @@ func GeneratePacketsArrayFromText(fileName string, replace ReplaceParams) []Pack
 	}
 
 	//Debug
-	for _, s := range scenario {
-		dumpHEPMessage(s)
-	}
+	//for _, s := range scenario {
+	//	dumpHEPMessage(s)
+	//}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
